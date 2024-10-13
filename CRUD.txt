@@ -1,0 +1,188 @@
+composer global require laravel/installer
+
+laravel new crud
+
+cd crud
+
+breeze
+blade
+yes
+phpunit
+MySQL
+NO
+
+cd crud
+php artisan migrate
+php artisan serve
+
+
+php artisan make:Model Product -m
+
+create a Controller called ProductController
+
+php artisan make:Controller ProductController
+
+go to database->migrations and give table columns 
+$table -> string('name');
+$table -> integer('quantity');
+$table -> integer('price');
+
+Now go to views->create egcrud-> create dashboard.blade.php->
+! enter -> <body> 
+<h1>crud operations</h1>
+<a href="{{url('add')}}">Add</a>
+<a href="{{url('view')}}">View</a>
+<\body>
+
+Now register the url for add and view in routes->web.php
+add
+use App\Http\Controllers\ProductController;
+
+Route::get('add',[ProductController::class,'view']);  after line 20
+
+Now make a function views in app->http->Controller->ProductController.php
+add
+use App\Models\Product;
+
+public function views()
+{
+return view('product.views');
+}
+
+public function view()
+{
+return view('egcrud.add');
+}
+
+Now create add.blade.php in egcrud folder which is in views
+Here Create a page for adding product
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registration Page</title>
+</head>
+<body>
+<div class="form-container">
+<h2>Add</h2>
+<form action="{{url('add_prod')}}">
+@csrf
+
+<div class="form-group">
+<label for="name">Name:</label>
+<input type="text" id="name" name="name" required>
+</div>
+
+
+<div class="form-group">
+<label for="quantity">Quantity:</label>
+<input type="quantity" id="quantity" name="quantity" required>
+</div>
+
+<div class="form-group">
+<label for="price">Price:</label>
+<input type="price" id="price" name="price" required>
+</div>
+
+<div class="form-group">
+<input type="submit" value="Add">
+</div>
+</form>
+</div>
+<\body>
+</html>
+
+Now go to web.php and add
+Route::get('add_prod',[ProductController::class,'add_product']);
+
+Now again go to ProductController
+
+public function add_product(Request $request)
+{
+	$a= new Product();
+        $a->name=$request->name;
+        $a->quantity=$request->quantity;
+        $a->prize=$request->prize;
+        $a->save();
+        return redirect()->back();
+
+    }
+
+Now the product will be added to the database.
+C in CRUD over
+
+Next, go to web.php
+add
+Route::get('view',[ProductController::class,'view_prod']);
+
+
+go to ProductController
+
+public function add()
+{
+	return view('product.view');
+}
+
+public function view_prod()
+{
+	$data= Product::all();
+	return view('egcrud.view',compact('data'));
+}
+
+Then create 
+view.blade.php in egcrud folder
+
+Now create
+! enter-> inside body->
+
+<table>
+<tr>
+</tr>
+<th>NAME</th>
+<th>Quantity</th>
+<th>Price</th>
+@foreach($data as $data)
+<tr>
+<td>{{$data->name}}</td>
+<td>{{$data->quantity}}</td>
+<td>{{$data->price}}</td>
+<td>
+<a href="{{url('delete', $data->id)}}">delete</a>
+</td>
+</tr>
+@endforeach
+</table>
+
+go to web.php and add
+Route::get('delete/{id}',[ProductController::class,'del']);
+
+
+Now go to ProductController and create function
+
+public function del($id)
+{
+	$data= Product::find($id);
+	$data->delete();
+	return redirect()->back();
+}
+
+Atlast go to web.php and change the url in line 7
+Route::get('/', function() {
+return view('egcrud.dashboard');
+});
+
+Now we can add view and delete
+
+
+
+
+
+
+
+
+
+
+
+

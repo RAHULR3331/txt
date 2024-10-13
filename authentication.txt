@@ -1,0 +1,94 @@
+composer global require laravel/installer
+
+laravel new authentication
+
+cd authentication
+
+breeze
+blade
+yes
+phpunit
+MySQL
+NO
+
+cd authentication
+php artisan migrate
+php artisan serve
+
+create a database in xaamp
+change it in .env
+
+Create model and migrate
+php artisan make:Model Authentication -m
+
+create a Controller called AuthenticationController
+
+php artisan make:Controller AuthenticationController
+
+go to database->migrations->users-> in up function
+add $table->Enum('role',['admin','user'])->default('user');
+
+Now go to web.php and add a route for admin and user
+
+Route::get('admin/dashboard',[AuthenticationController::class,'index'])->name('admin/dashboard');
+Route::get('user/dashboard',[AuthenticationController::class,'ind'])->name('user/dashboard');
+
+this should be outside the closing bracket of middleware
+
+use App\Http\Controllers\AuthenController;    in the top of web.php
+
+Now go to the AuthenticationController.php
+
+add use App\Models\Authentication;
+
+also add  inside the class function :
+
+public function index()
+{
+return view('admin.index');
+}
+public function ind()
+{return view('user.index');}
+
+Then go to views-> create an admin folder->create index.blade.php
+inside that !and enter-> ADMIN PAGE in body
+
+create an user folder->create index.blade.php
+inside that !and enter-> USER PAGE in body
+
+
+Now for change in authentication :
+go to app->http->Controllers->Auth->AuthenticatedSessionController.php
+
+In line 25
+
+public function store(LoginRequest $request): RedirectResponse
+    {
+        $request->authenticate();
+	
+        $request->session()->regenerate();
+
+	if($request->user()->role=='admin'){
+		return redirect()->route('admin/dashboard');
+}
+if($request->user()->role=='user'){
+		return redirect()->route('user/dashboard');
+}
+        return redirect()->intended(route('dashboard', absolute: false));
+    }
+
+php artisan migrate:refresh
+
+Now open the page and register 2 people
+Now go to the database in xaamp choose the users table
+edit the person who want to be admin and change the role to admin.
+
+
+
+
+
+
+
+
+
+
