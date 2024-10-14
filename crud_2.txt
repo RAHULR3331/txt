@@ -1,0 +1,104 @@
+go to database->migrations and give table columns 
+$table -> string('name');
+$table -> integer('quantity');
+$table -> integer('price');
+
+views->create egcrud-> create dashboard.blade.php, add.blade.php,view.blade.php
+
+web.php 
+
+use App\Http\Controllers\ProductController;
+
+Route::get('add',[ProductController::class,'view']);
+Route::get('add_prod',[ProductController::class,'add_product']);
+Route::get('view',[ProductController::class,'view_prod']);
+Route::get('delete/{id}',[ProductController::class,'del']);
+
+ProductController.php
+
+use App\Models\Product;
+
+public function views()
+{return view('product.views');}
+public function view()
+{return view('egcrud.add');}
+
+public function add_product(Request $request)
+{$a= new Product();
+$a->name=$request->name;
+$a->quantity=$request->quantity;
+$a->price=$request->price;
+$a->save();
+return redirect()->back();}
+
+public function add()
+{return view('product.view');}
+
+public function view_prod()
+{$data= Product::all();
+return view('egcrud.view',compact('data'));}
+
+public function del($id)
+{$data= Product::find($id);
+$data->delete();
+return redirect()->back();}
+
+
+dashboard.blade.php
+
+! enter -> 
+<h1>crud operations</h1>
+<a href="{{url('add')}}">Add</a>
+<a href="{{url('view')}}">View</a>
+
+
+add.blade.php
+
+<div class="form-container">
+<h2>Add</h2>
+<form action="{{url('add_prod')}}">
+@csrf
+
+<div class="form-group">
+<label for="name">Name:</label>
+<input type="text" id="name" name="name" required>
+</div>
+
+
+<div class="form-group">
+<label for="quantity">Quantity:</label>
+<input type="quantity" id="quantity" name="quantity" required>
+</div>
+
+<div class="form-group">
+<label for="price">Price:</label>
+<input type="price" id="price" name="price" required>
+</div>
+
+<div class="form-group">
+<input type="submit" value="Add">
+</div>
+</form>
+</div>
+
+view.blade.php
+
+<table>
+<tr>
+</tr>
+<th>NAME</th>
+<th>Quantity</th>
+<th>Price</th>
+@foreach($data as $data)
+<tr>
+<td>{{$data->name}}</td>
+<td>{{$data->quantity}}</td>
+<td>{{$data->price}}</td>
+<td>
+<a href="{{url('delete', $data->id)}}">delete</a>
+</td>
+</tr>
+@endforeach
+</table>
+
+
